@@ -59,8 +59,3 @@ pub fn GeometryDashExists() -> bool
 
 	return false;
 }
-
-pub fn DownloadRFP()
-{
-	
-}

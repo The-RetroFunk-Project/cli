@@ -48,7 +48,7 @@ pub fn get_exe_directory() -> io::Result<PathBuf> {
 pub fn get_config_from_json() -> Configuration
 {
     let configPath = get_config_path();
-    println!("Path: {}", configPath);
+    //println!("Path: {}", configPath);
 
     let configString = fs::read_to_string(&configPath).expect("Oops");
     let mut configFile : Configuration = serde_json::from_str(configString.as_str()).unwrap();
@@ -69,6 +69,12 @@ pub fn save_installation_path(loc: PathBuf)
 
     let newConfigData = serde_json::to_string(&configFile).unwrap();
     fs::write(get_config_path(), newConfigData).expect("Oops");
+}
+
+pub fn get_installation_path() -> String 
+{
+    let mut configFile = get_config_from_json();
+    return configFile.InstallationPath.unwrap().into_os_string().into_string().unwrap();
 }
 
 pub fn is_gd_path_valid() -> bool
