@@ -29,7 +29,7 @@ pub fn create_config()
     {
         let exePath = std::env::current_exe().unwrap();
         let saveDirectory = exePath.parent().unwrap();
-        let saveFile = saveDirectory.join("config.json");
+        let saveFile = saveDirectory.join("rfproject_config.json");
     
         if !exists(exePath.into_os_string().into_string().unwrap().as_str())
         {
@@ -58,7 +58,7 @@ pub fn get_config_from_json() -> Configuration
 
 pub fn get_config_path() -> String
 {
-    return format!(r#"{}\config.json"#, get_exe_directory().unwrap().into_os_string().into_string().unwrap());
+    return format!(r#"{}\rfproject_config.json"#, get_exe_directory().unwrap().into_os_string().into_string().unwrap());
 }
 
 pub fn save_installation_path(loc: PathBuf)

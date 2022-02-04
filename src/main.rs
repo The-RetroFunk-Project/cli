@@ -5,10 +5,13 @@ use std::process::*;
 pub mod install;
 pub mod config;
 pub mod resources;
+pub mod binaries;
 
 use std::cmp::min;
 use std::fs::File;
 use std::io::Write;
+use std::env;
+use std::fs;
 
 use reqwest::Client;
 use indicatif::{ProgressBar, ProgressStyle};
@@ -65,10 +68,19 @@ enum Commands {
         option: String,
     },
 
+    Update {}
+
 }
 
 #[tokio::main]
 async fn main() {
+
+    let update_path = format!("{}/rfproject-old.exe", binaries::get_safe_global_directory());
+    if config::exists(update_path.as_str())
+    {
+        fs::remove_file(&update_path).expect("Oops");
+    }
+
     let args = Cli::parse();
 
     match args.command
@@ -84,7 +96,10 @@ async fn main() {
                     let url = "https://github.com/The-RetroFunk-Project/game/releases/download/release/TRFP-Win64.zip";
                     let path = format!("{}/TRFP.zip", config::get_installation_path());
                     download_file(&client, url, &path).await;
+                    install::extract_retrofunk_project_zip();
                     resources::read_plist_file();
+                    binaries::binary_installation();
+                    install::installation_complete_message();
                     exit(0);
                 }
                 else
@@ -92,6 +107,25 @@ async fn main() {
                     exit(1);
                 }
             }
+            else if option == "switch-to-gd" { binaries::switch_to_gd(); exit(0); }
+            else if option == "switch-to-rfp" { binaries::switch_to_rfp(); exit(0); }
         },
+        Commands::Update {} =>
+        {
+            println!("Updating The RetroFunk Project...");
+            let mut client = reqwest::Client::new();
+
+            if cfg!(windows)
+            {
+                let url = "https://github.com/The-RetroFunk-Project/cli/releases/download/release/rfproject.exe";
+                let path = format!("{}/rfproject.exe", binaries::get_safe_global_directory());
+                let old_path = format!("{}/rfproject-old.exe", binaries::get_safe_global_directory());
+
+                fs::rename(&path, &old_path).expect("Oops");
+
+                download_file(&client, url, &path).await;
+            }
+            exit(0);
+        }
     }
 }

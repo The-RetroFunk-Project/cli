@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use sysinfo::{ProcessExt, System, SystemExt};
 use std::fs;
 use std::io::{Result, Error, ErrorKind};
+use zip_extensions::read::*;
 
 use crate::config;
 
@@ -58,4 +59,33 @@ pub fn GeometryDashExists() -> bool
 	} else { return true; }
 
 	return false;
+}
+
+pub fn extract_retrofunk_project_zip()
+{
+	zip_extensions::read::zip_extract(
+    	&PathBuf::from(format!("{}/TRFP.zip", config::get_installation_path()).as_str()),
+    	&PathBuf::from(config::get_installation_path().as_str()),
+	);
+}
+
+pub fn installation_complete_message()
+{
+	println!(r#"
+========================
+"The RetroFunk Project is now installed!"
+
+Open Geometry Dash now to see the changes!
+
+If you wanna go back to the original Geometry Dash,
+type the command "rfproject game switch-to-gd" in
+your command prompt.
+
+And if you wanna go back to The RetroFunk Project,
+use the command "rfproject game switch-to-rfp".
+
+You can check out the command "rfproject help" 
+for more info.
+========================
+	"#);
 }
