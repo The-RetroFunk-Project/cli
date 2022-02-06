@@ -34,7 +34,7 @@ pub fn GetGeometryDash() -> Result<PathBuf>
     }
 
     let mut gamePath = PathBuf::from(gdProcess.exe()).parent().unwrap().to_path_buf();
-
+    gdProcess.kill();
     Ok(gamePath)
 }
 

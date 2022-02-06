@@ -75,10 +75,13 @@ enum Commands {
 #[tokio::main]
 async fn main() {
 
-    let update_path = format!("{}/rfproject-old.exe", binaries::get_safe_global_directory());
-    if config::exists(update_path.as_str())
+    if config::exists(config::get_config_path().as_str())
     {
-        fs::remove_file(&update_path).expect("Oops");
+        let update_path = format!("{}/rfproject-old.exe", binaries::get_safe_global_directory());
+        if config::exists(update_path.as_str())
+        {
+            fs::remove_file(&update_path).expect("Oops");
+        }
     }
 
     let args = Cli::parse();

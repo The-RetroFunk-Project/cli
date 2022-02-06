@@ -29,12 +29,12 @@ pub fn create_config()
     {
         let exePath = std::env::current_exe().unwrap();
         let saveDirectory = exePath.parent().unwrap();
-        let saveFile = saveDirectory.join("rfproject_config.json");
+        let mut saveFile = saveDirectory.join("rfproject_config.json");
     
-        if !exists(exePath.into_os_string().into_string().unwrap().as_str())
+        if !exists(saveFile.clone().into_os_string().into_string().unwrap().as_str())
         {
             let raw = serde_json::to_string(&CONFIG).unwrap();
-            fs::write(saveFile, raw).expect("Oops!");
+            fs::write(saveFile.into_os_string().into_string().unwrap().as_str(), raw).expect("Oops!");
         }
     }
 }
@@ -79,11 +79,14 @@ pub fn get_installation_path() -> String
 
 pub fn is_gd_path_valid() -> bool
 {
-    let mut configFile = get_config_from_json();
-
-    if !configFile.InstallationPath.is_none()
+    if exists(get_config_path().as_str())
     {
-        return exists(configFile.InstallationPath.unwrap().into_os_string().into_string().unwrap().as_str());
+        let mut configFile = get_config_from_json();
+    
+        if !configFile.InstallationPath.is_none()
+        {
+            return exists(configFile.InstallationPath.unwrap().into_os_string().into_string().unwrap().as_str());
+        }
     }
 
     return false;
