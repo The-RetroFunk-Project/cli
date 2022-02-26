@@ -104,7 +104,7 @@ pub fn read_plist_file()
     }
 
     let game_path = format!(r#"{}\Game"#, config::get_installation_path());
-    let textures_path = format!(r#"{}\Game\Textures"#, config::get_installation_path());
+    let textures_path = format!(r#"{}\Game\Textures\Blocks\"#, config::get_installation_path());
     println!("Texture Path: {}", textures_path);
     if !config::exists(game_path.as_str()) { fs::create_dir(game_path).expect("Oops"); }
     if !config::exists(textures_path.as_str()) { fs::create_dir(textures_path).expect("Oops"); }
@@ -141,7 +141,7 @@ pub fn text_to_vector4(text: String) -> Vec<i32>
 
 pub fn save_plist_texture(name: String, mut img: Image, x: i32, y: i32, width: i32, height: i32)
 {
-    println!("Saving {}...", format!("{}/Game/Textures/{}", config::get_installation_path(), name));
+    println!("Saving {}...", format!("{}/Game/Textures/Blocks/{}", config::get_installation_path(), name));
     editor::crop(&mut img, width, height, PositionMode::TopLeft, x, y).unwrap();
-    raster::save(&img, format!("{}/Game/Textures/{}", config::get_installation_path(), name).as_str()).unwrap();
+    raster::save(&img, format!("{}/Game/Textures/Blocks/{}", config::get_installation_path(), name).as_str()).unwrap();
 }

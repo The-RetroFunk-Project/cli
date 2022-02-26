@@ -11,6 +11,10 @@ pub fn binary_installation()
 
 	if !config::exists(format!("{}/Game/Binaries", config::get_installation_path()).as_str()) 
 	{ fs::create_dir(format!("{}/Game/Binaries", config::get_installation_path()).as_str()); }
+	else {
+		// BE CAREFUL! THIS MEANS ITS INSTALLED! LET'S PUT BACK THE OG GEOMETRY DASH!
+		switch_to_gd();
+	}
 
 	if cfg!(windows)
 	{
@@ -63,13 +67,16 @@ pub fn set_binary_into_safe_global_directories()
 pub fn copy_cli_into_windows_apps()
 {
 	let exe_path = env::current_exe().unwrap().into_os_string().into_string().unwrap();
-	fs::copy(&exe_path, 
-		format!("{}/AppData/Local/Microsoft/WindowsApps/{}", dirs::home_dir().unwrap().into_os_string().into_string().unwrap(),
-		 Path::new(&exe_path).file_name().unwrap().to_os_string().into_string().unwrap())).expect("Oops");
+	if !exe_path.contains("AppData")
+	{
+		fs::copy(&exe_path, 
+			format!("{}/AppData/Local/Microsoft/WindowsApps/{}", dirs::home_dir().unwrap().into_os_string().into_string().unwrap(),
+			 Path::new(&exe_path).file_name().unwrap().to_os_string().into_string().unwrap())).expect("Oops");
 
-	fs::copy(&config::get_config_path(), 
-		format!("{}/AppData/Local/Microsoft/WindowsApps/{}", dirs::home_dir().unwrap().into_os_string().into_string().unwrap(),
-		 Path::new(&config::get_config_path()).file_name().unwrap().to_os_string().into_string().unwrap())).expect("Oops");
+		fs::copy(&config::get_config_path(), 
+			format!("{}/AppData/Local/Microsoft/WindowsApps/{}", dirs::home_dir().unwrap().into_os_string().into_string().unwrap(),
+			 Path::new(&config::get_config_path()).file_name().unwrap().to_os_string().into_string().unwrap())).expect("Oops");
+	}
 }
 
 pub fn get_binary_filename() -> String

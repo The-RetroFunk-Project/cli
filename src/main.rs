@@ -68,8 +68,17 @@ enum Commands {
         option: String,
     },
 
-    Update {}
+    Update {},
+    Ping {}
+}
 
+fn pause_terminal()
+{
+    let mut input = String::new();
+
+    std::io::stdin().read_line(&mut input)
+        .ok()
+        .expect("Couldn't read line");
 }
 
 #[tokio::main]
@@ -82,6 +91,45 @@ async fn main() {
         {
             fs::remove_file(&update_path).expect("Oops");
         }
+    }
+
+    if env::args().len() == 1
+    {
+        let mut input = String::new();
+
+        println!(r#"Welcome to The RetroFunk Project CLI! 
+If you want to install it, type 'game install'.
+If you want to switch to the original Geometry Dash, type 'game switch-to-gd'.
+If you want to switch back to The RetroFunk Project, type 'game switch-to-rfp'.
+For more information, type 'help'."#);
+
+        std::io::stdin().read_line(&mut input)
+            .ok()
+            .expect("Couldn't read line");    
+
+        let mut initCommand = String::new();
+
+        if config::exists(config::get_config_path().as_str()) 
+        { initCommand = "rfproject".to_string(); }
+        else 
+        { 
+            initCommand = std::env::current_exe().unwrap().into_os_string().into_string().unwrap(); 
+        }
+
+        let len = input.len();
+        input.truncate(len - 2);
+
+        //println!("Executable: {} | Arguments: {}", initCommand, input);
+        let rest: Vec<&str> = input.split(' ').collect::<Vec<&str>>();
+
+        let output = Command::new(initCommand).args(rest).spawn().expect("Oops");
+        print!("Press Enter or Return to Exit.");
+        pause_terminal();
+        exit(0);
+    }
+    else 
+    {
+        println!("There are {} arguments!", env::args().len());
     }
 
     let args = Cli::parse();
@@ -129,6 +177,7 @@ async fn main() {
                 download_file(&client, url, &path).await;
             }
             exit(0);
-        }
+        },
+        Commands::Ping {} => { print!("Pong!"); }
     }
 }
